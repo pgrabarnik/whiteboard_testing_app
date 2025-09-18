@@ -1,31 +1,27 @@
 import { Shape, Point, Size, Bbox } from "./Shape";
 import { Renderer } from "../renderer/Renderer";
 
+const IDLE_FILL_COLOR = "#FFB6C1";
+const HIGHLIGHTED_FILL_COLOR = "rgba(58, 115, 249, 0.66)";
+const STROKE_COLOR = "#000000";
+const STROKE_WIDTH = 2;
 export class Rectangle implements Shape {
-  public id: string;
-  public position: Point;
-  public size: Size;
-
-  private fillColor: string = "#FFB6C1";
-  private strokeColor: string = "#000000";
-  private strokeWidth: number = 2;
+  private fillColor: string = IDLE_FILL_COLOR;
+  private strokeColor: string = STROKE_COLOR;
+  private strokeWidth: number = STROKE_WIDTH;
 
   constructor(
-    id: string,
-    position: Point,
-    size: Size,
-    fillColor?: string,
-    strokeColor?: string
+    private renderer: Renderer,
+    public id: string,
+    public position: Point,
+    public size: Size
   ) {
     this.id = id;
     this.position = { ...position };
     this.size = { ...size };
-
-    if (fillColor) this.fillColor = fillColor;
-    if (strokeColor) this.strokeColor = strokeColor;
   }
 
-  draw(renderer: Renderer): void {
+  draw(): void {
     const bbox: Bbox = {
       x: this.position.x,
       y: this.position.y,
@@ -33,7 +29,7 @@ export class Rectangle implements Shape {
       height: this.size.height,
     };
 
-    renderer.drawRect(bbox, {
+    this.renderer.drawRect(bbox, {
       fillColor: this.fillColor,
       strokeColor: this.strokeColor,
       strokeWidth: this.strokeWidth,
@@ -49,7 +45,13 @@ export class Rectangle implements Shape {
   }
 
   setHighlighted(highlighted: boolean): void {
-    // To be implemented...
+    if (highlighted) {
+      this.fillColor = HIGHLIGHTED_FILL_COLOR;
+    } else {
+      this.fillColor = IDLE_FILL_COLOR;
+    }
+
+    this.draw();
   }
 
   containsPoint(point: Point): boolean {

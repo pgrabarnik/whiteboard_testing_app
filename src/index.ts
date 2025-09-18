@@ -26,6 +26,7 @@ export class WhiteboardApp {
   private addSampleShapes(): void {
     // Create one rectangle (left, vertically centered)
     const rectangle = new Rectangle(
+      this.renderer,
       "rect-1",
       { x: 200, y: (CANVAS_SIZE.height - 80) / 2 },
       { width: 120, height: 80 }
@@ -33,6 +34,7 @@ export class WhiteboardApp {
 
     // Create one area (right, vertically centered)
     const area = new Area(
+      this.renderer,
       "area-1",
       { x: 400, y: (CANVAS_SIZE.height - 300) / 2 },
       { width: 350, height: 300 }

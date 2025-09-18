@@ -1,31 +1,28 @@
 import { Shape, Point, Size, Bbox } from "./Shape";
 import { Renderer } from "../renderer/Renderer";
 
+const FILL_COLOR = "#FDF6E3";
+const IDLE_STROKE_COLOR = "#666666";
+const IDLE_STROKE_WIDTH = 1;
+const HIGHLIGHTED_STROKE_COLOR = "#0758ee";
+const HIGHLIGHTED_STROKE_WIDTH = 3;
 export class Area implements Shape {
-  public id: string;
-  public position: Point;
-  public size: Size;
-
-  private fillColor: string = "#FDF6E3";
-  private strokeColor: string = "#666666";
-  private strokeWidth: number = 1;
+  private fillColor: string = FILL_COLOR;
+  private strokeColor: string = IDLE_STROKE_COLOR;
+  private strokeWidth: number = IDLE_STROKE_WIDTH;
 
   constructor(
-    id: string,
-    position: Point,
-    size: Size,
-    fillColor?: string,
-    strokeColor?: string
+    private renderer: Renderer,
+    public id: string,
+    public position: Point,
+    public size: Size
   ) {
     this.id = id;
     this.position = { ...position };
     this.size = { ...size };
-
-    if (fillColor) this.fillColor = fillColor;
-    if (strokeColor) this.strokeColor = strokeColor;
   }
 
-  draw(renderer: Renderer): void {
+  draw(): void {
     const bbox: Bbox = {
       x: this.position.x,
       y: this.position.y,
@@ -33,7 +30,7 @@ export class Area implements Shape {
       height: this.size.height,
     };
 
-    renderer.drawRect(bbox, {
+    this.renderer.drawRect(bbox, {
       fillColor: this.fillColor,
       strokeColor: this.strokeColor,
       strokeWidth: this.strokeWidth,
@@ -49,7 +46,15 @@ export class Area implements Shape {
   }
 
   setHighlighted(highlighted: boolean): void {
-    // To be implemented...
+    if (highlighted) {
+      this.strokeColor = HIGHLIGHTED_STROKE_COLOR;
+      this.strokeWidth = HIGHLIGHTED_STROKE_WIDTH;
+    } else {
+      this.strokeColor = IDLE_STROKE_COLOR;
+      this.strokeWidth = IDLE_STROKE_WIDTH;
+    }
+
+    this.draw();
   }
 
   containsPoint(point: Point): boolean {
