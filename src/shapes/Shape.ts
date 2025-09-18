@@ -46,4 +46,9 @@ export interface Shape {
    * Get the bounding box of the shape
    */
   getBounds(): { x: number; y: number; width: number; height: number };
+
+  /**
+   * Check if this shape is fully contained within another shape's bounds
+   */
+  isFullyContainedWithin(other: Shape): boolean;
 }

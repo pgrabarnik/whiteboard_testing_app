@@ -31,6 +31,7 @@ export class Whiteboard {
 
   addShape(shape: Shape): void {
     this.shapes.push(shape);
+    this.checkContainment(); // Check containment when new shapes are added
     this.render();
   }
 
@@ -85,6 +86,10 @@ export class Whiteboard {
 
         this.dragState.draggedShape.setPosition(newPosition);
         this.dragState.lastMousePosition = mousePos;
+
+        // Check containment after position update
+        this.checkContainment();
+
         this.render();
       } else {
         // Handle cursor changes when hovering over shapes
@@ -99,6 +104,10 @@ export class Whiteboard {
         this.dragState.isDragging = false;
         this.dragState.draggedShape = null;
         this.canvas.style.cursor = "default";
+
+        // Final containment check after drag ends
+        this.checkContainment();
+        this.render();
       }
     });
 
@@ -108,8 +117,36 @@ export class Whiteboard {
         this.dragState.isDragging = false;
         this.dragState.draggedShape = null;
         this.canvas.style.cursor = "default";
+
+        // Final containment check after drag ends
+        this.checkContainment();
+        this.render();
       }
     });
+  }
+
+  /**
+   * Check containment between shapes and update highlighting accordingly
+   */
+  private checkContainment(): void {
+    // Reset all highlighting first
+    this.shapes.forEach((shape) => shape.setHighlighted(false));
+
+    // Check containment for all shape pairs
+    for (let i = 0; i < this.shapes.length; i++) {
+      for (let j = 0; j < this.shapes.length; j++) {
+        if (i === j) continue; // Skip self
+
+        const shapeA = this.shapes[i];
+        const shapeB = this.shapes[j];
+
+        // Check if shapeA is fully contained within shapeB
+        if (shapeA.isFullyContainedWithin(shapeB)) {
+          shapeA.setHighlighted(true);
+          shapeB.setHighlighted(true);
+        }
+      }
+    }
   }
 
   render(): void {
