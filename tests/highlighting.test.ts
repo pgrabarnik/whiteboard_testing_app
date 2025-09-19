@@ -380,9 +380,5 @@ describe("Containment Highlighting Behavior", () => {
       expect(rect.isHighlighted()).toBe(false);
       expect(area.isHighlighted()).toBe(false);
     });
-
-    // Note: Size change test is removed as it can't be tested with mouse events
-    // This would need to be tested differently or the implementation would need
-    // to trigger containment checks on size changes
   });
 });
