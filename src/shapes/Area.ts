@@ -76,16 +76,4 @@ export class Area implements Shape {
       height: this.size.height,
     };
   }
-
-  isFullyContainedWithin(other: Shape): boolean {
-    const myBounds = this.getBounds();
-    const otherBounds = other.getBounds();
-
-    return (
-      myBounds.x >= otherBounds.x &&
-      myBounds.y >= otherBounds.y &&
-      myBounds.x + myBounds.width <= otherBounds.x + otherBounds.width &&
-      myBounds.y + myBounds.height <= otherBounds.y + otherBounds.height
-    );
-  }
 }
