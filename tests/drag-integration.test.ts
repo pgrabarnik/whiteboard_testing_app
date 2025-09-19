@@ -22,6 +22,7 @@ describe("Drag and Drop Containment Integration", () => {
   let whiteboard: Whiteboard;
   let renderer: Renderer;
   let mockCanvas: HTMLCanvasElement;
+  let whiteboardCanvas: HTMLCanvasElement;
   let rectangle: Rectangle;
   let area: Area;
 
@@ -49,6 +50,7 @@ describe("Drag and Drop Containment Integration", () => {
 
     renderer = new Renderer("test-canvas");
     whiteboard = new Whiteboard(renderer);
+    whiteboardCanvas = renderer.getCanvasElement();
 
     // Create test shapes
     // Area: (100, 100) -> (300, 300) [200x200]
@@ -85,11 +87,11 @@ describe("Drag and Drop Containment Integration", () => {
 
       // Start drag on rectangle (center of rectangle at 75, 75)
       const mouseDownEvent = createMouseEvent("mousedown", 75, 75);
-      mockCanvas.dispatchEvent(mouseDownEvent);
+      whiteboardCanvas.dispatchEvent(mouseDownEvent);
 
       // Verify drag started
-      expect((whiteboard as any).dragState.isDragging).toBe(true);
-      expect((whiteboard as any).dragState.draggedShape).toBe(rectangle);
+      expect((whiteboard as any).dragState.getIsDragging()).toBe(true);
+      expect((whiteboard as any).dragState.getDraggedShape()).toBe(rectangle);
 
       // Clear the spy call count from initial setup
       checkContainmentSpy.mockClear();
@@ -97,14 +99,14 @@ describe("Drag and Drop Containment Integration", () => {
       // Drag rectangle to be contained within area (move to 150, 150)
       // This means rectangle will be at (125, 125) -> (175, 175) [50x50]
       const mouseMoveEvent = createMouseEvent("mousemove", 150, 150);
-      mockCanvas.dispatchEvent(mouseMoveEvent);
+      whiteboardCanvas.dispatchEvent(mouseMoveEvent);
 
       // Verify containment check was called
       expect(checkContainmentSpy).toHaveBeenCalled();
 
       // End drag
       const mouseUpEvent = createMouseEvent("mouseup", 150, 150);
-      mockCanvas.dispatchEvent(mouseUpEvent);
+      whiteboardCanvas.dispatchEvent(mouseUpEvent);
 
       // Verify final containment check
       expect(checkContainmentSpy).toHaveBeenCalledTimes(2); // During move and on mouse up
@@ -117,18 +119,18 @@ describe("Drag and Drop Containment Integration", () => {
 
       // Start drag on rectangle
       const mouseDownEvent = createMouseEvent("mousedown", 75, 75);
-      mockCanvas.dispatchEvent(mouseDownEvent);
+      whiteboardCanvas.dispatchEvent(mouseDownEvent);
 
       // Drag rectangle to be fully contained within area
       // Rectangle center was at (75, 75), move it to (175, 175)
       // This will place rectangle at (150, 150) -> (200, 200) [50x50]
       // Which is fully within area bounds (100, 100) -> (300, 300)
       const mouseMoveEvent = createMouseEvent("mousemove", 175, 175);
-      mockCanvas.dispatchEvent(mouseMoveEvent);
+      whiteboardCanvas.dispatchEvent(mouseMoveEvent);
 
       // End drag
       const mouseUpEvent = createMouseEvent("mouseup", 175, 175);
-      mockCanvas.dispatchEvent(mouseUpEvent);
+      whiteboardCanvas.dispatchEvent(mouseUpEvent);
 
       // Verify highlighting was triggered
       expect(rectangleHighlightSpy).toHaveBeenCalledWith(true);
@@ -145,16 +147,16 @@ describe("Drag and Drop Containment Integration", () => {
 
       // Start drag on the contained rectangle
       const mouseDownEvent = createMouseEvent("mousedown", 175, 175);
-      mockCanvas.dispatchEvent(mouseDownEvent);
+      whiteboardCanvas.dispatchEvent(mouseDownEvent);
 
       // Drag rectangle outside area bounds
       // Move rectangle center to (400, 400), placing rectangle at (375, 375) -> (425, 425)
       const mouseMoveEvent = createMouseEvent("mousemove", 400, 400);
-      mockCanvas.dispatchEvent(mouseMoveEvent);
+      whiteboardCanvas.dispatchEvent(mouseMoveEvent);
 
       // End drag
       const mouseUpEvent = createMouseEvent("mouseup", 400, 400);
-      mockCanvas.dispatchEvent(mouseUpEvent);
+      whiteboardCanvas.dispatchEvent(mouseUpEvent);
 
       // Verify highlighting was removed
       expect(rectangleHighlightSpy).toHaveBeenCalledWith(false);
@@ -167,17 +169,17 @@ describe("Drag and Drop Containment Integration", () => {
 
       // Start drag
       const mouseDownEvent = createMouseEvent("mousedown", 75, 75);
-      mockCanvas.dispatchEvent(mouseDownEvent);
+      whiteboardCanvas.dispatchEvent(mouseDownEvent);
 
       // Drag to position where rectangle partially overlaps but is not fully contained
       // Move to (120, 120) so rectangle is at (95, 95) -> (145, 145) [50x50]
       // This partially overlaps area (100, 100) -> (300, 300) but is not fully contained
       const mouseMoveEvent = createMouseEvent("mousemove", 120, 120);
-      mockCanvas.dispatchEvent(mouseMoveEvent);
+      whiteboardCanvas.dispatchEvent(mouseMoveEvent);
 
       // End drag
       const mouseUpEvent = createMouseEvent("mouseup", 120, 120);
-      mockCanvas.dispatchEvent(mouseUpEvent);
+      whiteboardCanvas.dispatchEvent(mouseUpEvent);
 
       // Verify no highlighting occurs for partial containment
       expect(rectangleHighlightSpy).toHaveBeenCalledWith(false);
@@ -192,17 +194,17 @@ describe("Drag and Drop Containment Integration", () => {
 
       // Start drag
       const mouseDownEvent = createMouseEvent("mousedown", 75, 75);
-      mockCanvas.dispatchEvent(mouseDownEvent);
+      whiteboardCanvas.dispatchEvent(mouseDownEvent);
 
       // Verify drag is active
-      expect((whiteboard as any).dragState.isDragging).toBe(true);
+      expect((whiteboard as any).dragState.getIsDragging()).toBe(true);
 
       // Trigger mouse leave
       const mouseLeaveEvent = createMouseEvent("mouseleave", 0, 0);
-      mockCanvas.dispatchEvent(mouseLeaveEvent);
+      whiteboardCanvas.dispatchEvent(mouseLeaveEvent);
 
       // Verify drag ended and containment check was performed
-      expect((whiteboard as any).dragState.isDragging).toBe(false);
+      expect((whiteboard as any).dragState.getIsDragging()).toBe(false);
       expect(checkContainmentSpy).toHaveBeenCalled();
     });
 
@@ -212,17 +214,17 @@ describe("Drag and Drop Containment Integration", () => {
 
       // Start drag
       const mouseDownEvent = createMouseEvent("mousedown", 75, 75);
-      mockCanvas.dispatchEvent(mouseDownEvent);
+      whiteboardCanvas.dispatchEvent(mouseDownEvent);
 
       // Drag to exact boundary position where rectangle touches area boundary from inside
       // Move to (125, 125) so rectangle is at (100, 100) -> (150, 150) [50x50]
       // This should be fully contained within area (100, 100) -> (300, 300)
       const mouseMoveEvent = createMouseEvent("mousemove", 125, 125);
-      mockCanvas.dispatchEvent(mouseMoveEvent);
+      whiteboardCanvas.dispatchEvent(mouseMoveEvent);
 
       // End drag
       const mouseUpEvent = createMouseEvent("mouseup", 125, 125);
-      mockCanvas.dispatchEvent(mouseUpEvent);
+      whiteboardCanvas.dispatchEvent(mouseUpEvent);
 
       // Verify highlighting occurs for boundary containment
       expect(rectangleHighlightSpy).toHaveBeenCalledWith(true);
@@ -247,17 +249,17 @@ describe("Drag and Drop Containment Integration", () => {
 
       // Start drag
       const mouseDownEvent = createMouseEvent("mousedown", 75, 75);
-      mockCanvas.dispatchEvent(mouseDownEvent);
+      whiteboardCanvas.dispatchEvent(mouseDownEvent);
 
       // Drag rectangle to be contained within both areas
       // Move to (150, 150) so rectangle is at (125, 125) -> (175, 175) [50x50]
       // This is within both area (100, 100) -> (300, 300) and smallArea (120, 120) -> (180, 180)
       const mouseMoveEvent = createMouseEvent("mousemove", 150, 150);
-      mockCanvas.dispatchEvent(mouseMoveEvent);
+      whiteboardCanvas.dispatchEvent(mouseMoveEvent);
 
       // End drag
       const mouseUpEvent = createMouseEvent("mouseup", 150, 150);
-      mockCanvas.dispatchEvent(mouseUpEvent);
+      whiteboardCanvas.dispatchEvent(mouseUpEvent);
 
       // All shapes should be highlighted due to containment relationships
       expect(rectangleHighlightSpy).toHaveBeenCalledWith(true);

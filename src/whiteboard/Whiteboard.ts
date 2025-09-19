@@ -1,12 +1,6 @@
 import { Shape, Point } from "../shapes/Shape";
 import { Renderer } from "../renderer/Renderer";
-
-export interface DragState {
-  isDragging: boolean;
-  draggedShape: Shape | null;
-  dragOffset: Point;
-  lastMousePosition: Point;
-}
+import { DragState } from "./DragState";
 
 export class Whiteboard {
   private canvas: HTMLCanvasElement;
@@ -17,13 +11,7 @@ export class Whiteboard {
   constructor(renderer: Renderer) {
     this.renderer = renderer;
     this.canvas = renderer.getCanvasElement();
-
-    this.dragState = {
-      isDragging: false,
-      draggedShape: null,
-      dragOffset: { x: 0, y: 0 },
-      lastMousePosition: { x: 0, y: 0 },
-    };
+    this.dragState = new DragState();
 
     this.setupEventListeners();
     this.render();
@@ -60,13 +48,7 @@ export class Whiteboard {
       const clickedShape = this.findShapeAtPoint(mousePos);
 
       if (clickedShape) {
-        this.dragState.isDragging = true;
-        this.dragState.draggedShape = clickedShape;
-        this.dragState.dragOffset = {
-          x: mousePos.x - clickedShape.position.x,
-          y: mousePos.y - clickedShape.position.y,
-        };
-        this.dragState.lastMousePosition = mousePos;
+        this.dragState.startDrag(clickedShape, mousePos);
 
         // Change cursor to indicate dragging
         this.canvas.style.cursor = "grabbing";
@@ -77,15 +59,9 @@ export class Whiteboard {
     this.canvas.addEventListener("mousemove", (event: MouseEvent) => {
       const mousePos = this.getMousePosition(event);
 
-      if (this.dragState.isDragging && this.dragState.draggedShape) {
-        // Update shape position
-        const newPosition: Point = {
-          x: mousePos.x - this.dragState.dragOffset.x,
-          y: mousePos.y - this.dragState.dragOffset.y,
-        };
-
-        this.dragState.draggedShape.setPosition(newPosition);
-        this.dragState.lastMousePosition = mousePos;
+      if (this.dragState.getIsDragging()) {
+        // Update shape position using DragState
+        this.dragState.updateDrag(mousePos);
 
         // Check containment after position update
         this.checkContainment();
@@ -100,9 +76,8 @@ export class Whiteboard {
 
     // Mouse up event - stop dragging
     this.canvas.addEventListener("mouseup", (event: MouseEvent) => {
-      if (this.dragState.isDragging) {
-        this.dragState.isDragging = false;
-        this.dragState.draggedShape = null;
+      if (this.dragState.getIsDragging()) {
+        this.dragState.endDrag();
         this.canvas.style.cursor = "default";
 
         // Final containment check after drag ends
@@ -113,9 +88,8 @@ export class Whiteboard {
 
     // Mouse leave event - stop dragging if mouse leaves canvas
     this.canvas.addEventListener("mouseleave", (event: MouseEvent) => {
-      if (this.dragState.isDragging) {
-        this.dragState.isDragging = false;
-        this.dragState.draggedShape = null;
+      if (this.dragState.getIsDragging()) {
+        this.dragState.endDrag();
         this.canvas.style.cursor = "default";
 
         // Final containment check after drag ends
@@ -155,10 +129,10 @@ export class Whiteboard {
 
     // Draw all shapes, but draw the dragged shape last (on top)
     this.shapes
-      .filter((s) => this.dragState.draggedShape !== s)
+      .filter((s) => this.dragState.getDraggedShape() !== s)
       .forEach((shape) => shape.draw(this.renderer));
 
     // Draw the dragged shape last so it appears on top
-    this.dragState.draggedShape?.draw(this.renderer);
+    this.dragState.getDraggedShape()?.draw(this.renderer);
   }
 }
