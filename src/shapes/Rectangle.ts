@@ -56,6 +56,10 @@ export class Rectangle implements Shape {
     this.draw();
   }
 
+  isHighlighted(): boolean {
+    return this.fillColor === HIGHLIGHTED_FILL_COLOR;
+  }
+
   containsPoint(point: Point): boolean {
     return (
       point.x >= this.position.x &&

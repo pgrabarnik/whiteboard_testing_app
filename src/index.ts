@@ -4,6 +4,7 @@ import { Area } from "./shapes/Area";
 import { Renderer } from "./renderer/Renderer";
 
 import "../styles.css";
+import { Shape } from "./shapes/Shape";
 
 const CANVAS_SIZE = { width: 800, height: 600 };
 const CANVAS_BG_COLOR = "#d7d7d7";
@@ -11,6 +12,7 @@ const CANVAS_BG_COLOR = "#d7d7d7";
 export class WhiteboardApp {
   private whiteboard: Whiteboard;
   private renderer: Renderer;
+  private shapes: Shape[] = [];
 
   constructor(canvasId: string) {
     this.renderer = new Renderer(canvasId);
@@ -25,25 +27,36 @@ export class WhiteboardApp {
 
   private addSampleShapes(): void {
     // Create one area (right, vertically centered)
-    const area = new Area(
-      this.renderer,
-      "area-1",
-      { x: 400, y: (CANVAS_SIZE.height - 300) / 2 },
-      { width: 350, height: 300 },
-      0
+    this.shapes.push(
+      new Area(
+        this.renderer,
+        "area",
+        { x: 400, y: (CANVAS_SIZE.height - 300) / 2 },
+        { width: 350, height: 300 },
+        0
+      )
     );
 
     // Create one rectangle (left, vertically centered)
-    const rectangle = new Rectangle(
-      this.renderer,
-      "rect-1",
-      { x: 200, y: (CANVAS_SIZE.height - 80) / 2 },
-      { width: 120, height: 80 },
-      1
+    this.shapes.push(
+      new Rectangle(
+        this.renderer,
+        "rect",
+        { x: 200, y: (CANVAS_SIZE.height - 80) / 2 },
+        { width: 120, height: 80 },
+        1
+      )
     );
 
-    this.whiteboard.addShape(area);
-    this.whiteboard.addShape(rectangle);
+    this.shapes.forEach((shape) => this.whiteboard.addShape(shape));
+  }
+
+  public getShapes(): Shape[] {
+    return this.shapes;
+  }
+
+  public getShapeById(id: string): Shape | undefined {
+    return this.shapes.find((shape) => shape.id === id);
   }
 }
 

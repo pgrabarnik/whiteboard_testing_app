@@ -6,9 +6,13 @@ module.exports = {
   transform: {
     "^.+\\.ts$": "ts-jest",
   },
-  setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],
   moduleNameMapper: {
     "^../src/(.*)$": "<rootDir>/src/$1",
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
   },
   collectCoverageFrom: ["src/**/*.ts", "!src/**/*.d.ts", "!src/index.ts"],
+  setupFilesAfterEnv: ["jest-canvas-mock"],
+  testEnvironmentOptions: {
+    customExportConditions: ["node", "node-addons"],
+  },
 };

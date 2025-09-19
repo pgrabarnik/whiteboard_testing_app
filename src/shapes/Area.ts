@@ -59,6 +59,10 @@ export class Area implements Shape {
     this.draw();
   }
 
+  isHighlighted(): boolean {
+    return this.strokeColor === HIGHLIGHTED_STROKE_COLOR;
+  }
+
   containsPoint(point: Point): boolean {
     return (
       point.x >= this.position.x &&

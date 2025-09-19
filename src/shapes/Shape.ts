@@ -44,6 +44,11 @@ export interface Shape {
   setHighlighted(highlighted: boolean): void;
 
   /**
+   * Checks if the shape is highlighted
+   */
+  isHighlighted(): boolean;
+
+  /**
    * Get the bounding box of the shape
    */
   getBounds(): { x: number; y: number; width: number; height: number };
