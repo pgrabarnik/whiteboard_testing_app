@@ -16,6 +16,7 @@ export interface Shape {
   id: string;
   position: Point;
   size: Size;
+  zIndex: number;
 
   /**
    * Draw the shape using the renderer

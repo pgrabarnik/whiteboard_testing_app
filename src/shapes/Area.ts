@@ -15,11 +15,13 @@ export class Area implements Shape {
     private renderer: Renderer,
     public id: string,
     public position: Point,
-    public size: Size
+    public size: Size,
+    public zIndex: number
   ) {
     this.id = id;
     this.position = { ...position };
     this.size = { ...size };
+    this.zIndex = zIndex;
   }
 
   draw(): void {

@@ -24,24 +24,26 @@ export class WhiteboardApp {
   }
 
   private addSampleShapes(): void {
-    // Create one rectangle (left, vertically centered)
-    const rectangle = new Rectangle(
-      this.renderer,
-      "rect-1",
-      { x: 200, y: (CANVAS_SIZE.height - 80) / 2 },
-      { width: 120, height: 80 }
-    );
-
     // Create one area (right, vertically centered)
     const area = new Area(
       this.renderer,
       "area-1",
       { x: 400, y: (CANVAS_SIZE.height - 300) / 2 },
-      { width: 350, height: 300 }
+      { width: 350, height: 300 },
+      0
     );
 
-    this.whiteboard.addShape(rectangle);
+    // Create one rectangle (left, vertically centered)
+    const rectangle = new Rectangle(
+      this.renderer,
+      "rect-1",
+      { x: 200, y: (CANVAS_SIZE.height - 80) / 2 },
+      { width: 120, height: 80 },
+      1
+    );
+
     this.whiteboard.addShape(area);
+    this.whiteboard.addShape(rectangle);
   }
 }
 

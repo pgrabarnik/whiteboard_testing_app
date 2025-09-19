@@ -124,15 +124,10 @@ export class Whiteboard {
   }
 
   render(): void {
-    // Clear canvas
     this.renderer.clear();
 
-    // Draw all shapes, but draw the dragged shape last (on top)
     this.shapes
-      .filter((s) => this.dragState.getDraggedShape() !== s)
+      .sort((a, b) => a.zIndex - b.zIndex)
       .forEach((shape) => shape.draw(this.renderer));
-
-    // Draw the dragged shape last so it appears on top
-    this.dragState.getDraggedShape()?.draw(this.renderer);
   }
 }
